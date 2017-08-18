@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>codeMarble</string>
   </property>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="makerBtn">
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -26,7 +26,7 @@
     <string>Maker</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="testerBtn">
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -42,4 +42,8 @@
  </widget>
  <resources/>
  <connections/>
+ <slots>
+  <slot>maker()</slot>
+  <slot>tester()</slot>
+ </slots>
 </ui>
