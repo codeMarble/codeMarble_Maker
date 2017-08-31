@@ -7,15 +7,19 @@
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 from codeMarbleMaker.src import modeSelect
+
+settingDict = {}
 
 class Main(QMainWindow):
     def __init__(self, ruleData, parent=None):
         QMainWindow.__init__(self, parent)
         self.ms = modeSelect.ModeSelect(ruleData, self)
         self.ms.exec()
-        print(self.ms.bs.boardSize, self.ms.bs.placement)
+        settingDict['보드 크기'] = self.ms.bs.boardSize
+        settingDict['착수 규칙'] = self.ms.bs.placement
 
         self.initUI()
 
@@ -59,7 +63,12 @@ class Main(QMainWindow):
 
         # board image widget
         self.lblBoard = QLabel()
-        self.lblBoard.setPixmap(self.ms.bs.boardImage.scaled(400, 400))
+        board = self.ms.bs.boardImage.scaled(400, 400)
+        painter = QPainter(board)
+        painter.drawPixmap(0, 0, 400, 400, QPixmap('C:/Users/nlp-ngh/PycharmProjects/codeMarble_Maker/water-png-22.png')) # grid path
+        painter.end()
+        self.lblBoard.setPixmap(board)
+
         self.lblBoard.setAlignment(Qt.AlignCenter)
         self.setCentralWidget(self.lblBoard)
 
@@ -75,6 +84,8 @@ class ListWidgetSetting(QListWidget):
     def __init__(self, dockDtlSetting):
         QListWidget.__init__(self)
         self.dockDtlSetting = dockDtlSetting
+        self.lstWgDtlSetting = QListWidget()
+        self.dockDtlSetting.setWidget(self.lstWgDtlSetting)
         self.itemClicked.connect(self.slotItemClick)
 
         self.lstSetting = ['보드 세팅', '오브젝트 세팅', '보드 초기화', '착수 규칙', '착수 옵션', '착수 후 규칙', '종료 규칙']
@@ -92,8 +103,64 @@ class ListWidgetSetting(QListWidget):
             class ListWidgetDtlBoardSetting(QListWidget):
                 def __init__(self):
                     QListWidget.__init__(self)
-                    self.addItem('board setting')
-                    self.addItem('dummy1')
+                    for settingText, widgetClass in [('크기', self.WidgetBoardSize), ('착수 규칙', self.WidgetPlacement)]:
+                        item = QListWidgetItem()
+                        widget = widgetClass()
+                        item.setSizeHint(widget.sizeHint())
+                        self.addItem(item)
+                        self.setItemWidget(item, widget)
+
+                class WidgetBoardSize(QWidget):
+                    def __init__(self):
+                        QWidget.__init__(self)
+                        label = QLabel('보드 크기')
+                        self.radio1 = QRadioButton('8')
+                        self.radio2 = QRadioButton('11')
+                        self.radio1.clicked.connect(self.slotSize)
+                        self.radio2.clicked.connect(self.slotSize)
+                        if settingDict['보드 크기'] == 8:
+                            self.radio1.setChecked(True)
+                        elif settingDict['보드 크기'] == 11:
+                            self.radio2.setChecked(True)
+                        lay = QHBoxLayout()
+                        lay.addWidget(label)
+                        lay.addWidget(self.radio1)
+                        lay.addWidget(self.radio2)
+                        self.setLayout(lay)
+
+                    @pyqtSlot()
+                    def slotSize(self):
+                        print('detail setting board size radio called!')
+                        if self.radio1.isChecked():
+                            settingDict['보드 크기'] = 8
+                        elif self.radio2.isChecked():
+                            settingDict['보드 크기'] = 11
+
+                class WidgetPlacement(QWidget):
+                    def __init__(self):
+                        QWidget.__init__(self)
+                        label = QLabel('착수 규칙')
+                        self.radio1 = QRadioButton('cell')
+                        self.radio2 = QRadioButton('cross point')
+                        self.radio1.clicked.connect(self.slotPlacement)
+                        self.radio2.clicked.connect(self.slotPlacement)
+                        if settingDict['착수 규칙'] == 'cell':
+                            self.radio1.setChecked(True)
+                        elif settingDict['착수 규칙'] == 'cross point':
+                            self.radio2.setChecked(True)
+                        lay = QHBoxLayout()
+                        lay.addWidget(label)
+                        lay.addWidget(self.radio1)
+                        lay.addWidget(self.radio2)
+                        self.setLayout(lay)
+
+                    @pyqtSlot()
+                    def slotPlacement(self):
+                        print('detail setting placement radio called!')
+                        if self.radio1.isChecked():
+                            settingDict['착수 규칙'] = 'cell'
+                        elif self.radio2.isChecked():
+                            settingDict['착수 규칙'] = 'cross point'
 
             self.lstWgDtlSetting = ListWidgetDtlBoardSetting()
 
@@ -108,17 +175,24 @@ class ListWidgetSetting(QListWidget):
             self.lstWgDtlSetting = ListWidgetDtlObjectSetting()
 
         elif item.text() == '보드 초기화':
+            self.lstWgDtlSetting = QListWidget()
             pass
         elif item.text() == '착수 규칙':
+            self.lstWgDtlSetting = QListWidget()
             pass
         elif item.text() == '착수 옵션':
+            self.lstWgDtlSetting = QListWidget()
             pass
         elif item.text() == '착수 후 규칙':
+            self.lstWgDtlSetting = QListWidget()
             pass
         elif item.text() == '종료 규칙':
+            self.lstWgDtlSetting = QListWidget()
             pass
 
         self.dockDtlSetting.setWidget(self.lstWgDtlSetting)
+        self.dockDtlSetting.setWindowTitle(item.text())
+
 
 
 # if item.text() == 'Board setting':
