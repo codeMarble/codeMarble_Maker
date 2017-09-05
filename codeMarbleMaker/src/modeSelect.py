@@ -59,7 +59,7 @@ class ModeSelect(QDialog):
     def makerSlot(self):
         print('maker slot called!')
         self.setVisible(False)
-        self.bs = boardSetting.BoardSetting(self.ruleData, self)
+        self.bs = boardSetting.DialogBoardSetting(self.ruleData, self)
         self.bs.exec()
         self.close()
 
@@ -69,42 +69,3 @@ class ModeSelect(QDialog):
         msgBox = QMessageBox()
         msgBox.setText('Sorry, function implementing...')
         msgBox.exec()
-
-# import os
-# import sys
-#
-# from PyQt5 import QtWidgets
-# from PyQt5 import uic
-# from PyQt5.QtCore import pyqtSlot
-#
-# from codeMarbleMaker import config
-# from codeMarbleMaker.src import boardSetting
-#
-# class ModeSelect(QtWidgets.QDialog):
-#     def __init__(self, ruleData, parent=None):
-#         QtWidgets.QDialog.__init__(self, parent)
-#
-#         self.initUI()
-#
-#         self.modeSelect = uic.loadUi(os.path.join(config.config.ROOT_PATH, 'modeSelect.ui'), self)
-#         self.ruleData = ruleData
-#
-#         self.modeSelect.makerBtn.clicked.connect(self.makerSlot)
-#         self.modeSelect.testerBtn.clicked.connect(self.testerSlot)
-#
-#     def initUI(self):
-#
-#         pass
-#
-#
-#     @pyqtSlot()
-#     def makerSlot(self):
-#         print('maker calling...')
-#         self.boardSetting = boardSetting.BoardSetting(self.ruleData)
-#         self.modeSelect.close()
-#         self.boardSetting.exec_()
-#         # print(self.boardSetting.boardSize)
-#
-#     @pyqtSlot()
-#     def testerSlot(self):
-#         print('tester calling...')

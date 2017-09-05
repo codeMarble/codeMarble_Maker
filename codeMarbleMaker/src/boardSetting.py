@@ -9,13 +9,15 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-class BoardSetting(QDialog):
+from codeMarbleMaker.src.settingVariable import *
+
+class DialogBoardSetting(QDialog):
     def __init__(self, ruleData, parent):
         QDialog.__init__(self, parent)
         self.ruleData = ruleData
-        self.boardSize = 0
+        self.boardSize = ''
         self.placement = ''
-        self.bgImageUrl = QUrl()
+        self.bgImageUrl = ''
 
         self.initUI()
         self.initSlot()
@@ -33,8 +35,8 @@ class BoardSetting(QDialog):
         self.setFixedSize(width, height)
 
         # board size
-        self.radioBoardSize1 = QRadioButton('8')
-        self.radioBoardSize2 = QRadioButton('11')
+        self.radioBoardSize1 = QRadioButton(BoardSetting.size1)
+        self.radioBoardSize2 = QRadioButton(BoardSetting.size2)
         self.layBoardSize = QHBoxLayout()
         self.layBoardSize.addWidget(self.radioBoardSize1)
         self.layBoardSize.addWidget(self.radioBoardSize2)
@@ -42,8 +44,8 @@ class BoardSetting(QDialog):
         self.boxBoardSize.setLayout(self.layBoardSize)
 
         # placement point
-        self.radioPlacement1 = QRadioButton('cell')
-        self.radioPlacement2 = QRadioButton('cross point')
+        self.radioPlacement1 = QRadioButton(BoardSetting.placement1)
+        self.radioPlacement2 = QRadioButton(BoardSetting.placement2)
         self.layPlacement = QHBoxLayout()
         self.layPlacement.addWidget(self.radioPlacement1)
         self.layPlacement.addWidget(self.radioPlacement2)
@@ -94,7 +96,7 @@ class BoardSetting(QDialog):
         self.radioPlacement2.clicked.connect(self.slotPlacement)
 
     def isBoardSetting(self):
-        return False if self.boardSize is 0 or self.placement is '' or self.bgImageUrl.isEmpty() else True
+        return False if self.boardSize is '' or self.placement is '' or self.bgImageUrl == '' else True
 
     @pyqtSlot()
     def slotImageBrowse(self):
@@ -109,8 +111,9 @@ class BoardSetting(QDialog):
         if imageBrowser.exec() == QFileDialog.Accepted:
            try:
                print(imageBrowser.selectedUrls())
-               self.bgImageUrl = imageBrowser.selectedUrls()[0]
-               self.boardImage = QPixmap(self.bgImageUrl.path()[1:])
+               self.bgImageUrl = imageBrowser.selectedUrls()[0].path()[1:]
+               print(self.bgImageUrl)
+               self.boardImage = QPixmap(self.bgImageUrl)
                self.lblBackGroundImage.setPixmap(self.boardImage)
                self.lblBackGroundImage.show()
            except Exception as e:
@@ -124,114 +127,23 @@ class BoardSetting(QDialog):
             msgBox.setText("fill in blank")
             msgBox.exec()
         else:
+            print('finish board setting!')
             self.close()
 
     @pyqtSlot()
     def slotBoardSize(self):
         print('board size radio called!')
         if self.radioBoardSize1.isChecked():
-            self.boardSize = 8
+            self.boardSize = BoardSetting.size1
         elif self.radioBoardSize2.isChecked():
-            self.boardSize = 11
+            self.boardSize = BoardSetting.size2
         print(self.boardSize)
 
     @pyqtSlot()
     def slotPlacement(self):
         print('placement radio called!')
         if self.radioPlacement1.isChecked():
-            self.placement = 'cell'
+            self.placement = BoardSetting.placement1
         elif self.radioPlacement2.isChecked():
-            self.placement = 'cross point'
+            self.placement = BoardSetting.placement2
         print(self.placement)
-
-
-
-
-
-            # import sys
-        #
-        # from PyQt5 import QtWidgets
-        # from PyQt5 import uic
-        # from PyQt5.QtCore import pyqtSlot, QUrl
-        # from PyQt5.QtGui import QPixmap
-        # from PyQt5.QtWidgets import QFileDialog
-        #
-        # from codeMarbleMaker import config
-        #
-        # class BoardSetting(QtWidgets.QDialog):
-        #     def __init__(self, ruleData, parent=None):
-        #         QtWidgets.QDialog.__init__(self, parent)
-        #         self.boardSetting = uic.loadUi(os.path.join(config.config.ROOT_PATH, 'boardSetting.ui'), self)
-        #         self.ruleData = ruleData
-        #         self.boardSize = 0
-        #         self.placement = ''
-        #         self.bgImageUrl = QUrl()
-        #
-        #
-        #         # from PyQt5.QtWidgets import QRadioButton
-        #         # qq = QRadioButton()
-        #         # qq.setChecked()
-        #
-        #         self.boardSetting.boardSizeRadioBtn1.clicked.connect(self.boardSizeClickedSlot)
-        #         self.boardSetting.boardSizeRadioBtn2.clicked.connect(self.boardSizeClickedSlot)
-        #
-        #         self.boardSetting.placementRadioBtn1.clicked.connect(self.placementClickedSlot)
-        #         self.boardSetting.placementRadioBtn2.clicked.connect(self.placementClickedSlot)
-        #
-        #         self.boardSetting.bgImageBtn.clicked.connect(self.bgImageClickedSlot)
-        #         self.boardSetting.okBtn.clicked.connect(self.saveClickedSlot)
-        #
-        #     @pyqtSlot()
-        #     def boardSizeClickedSlot(self):
-        #         if self.boardSetting.boardSizeRadioBtn1.isChecked():
-        #             self.boardSize = 8
-        #         elif self.boardSetting.boardSizeRadioBtn2.isChecked():
-        #             self.boardSize = 11
-        #         else:
-        #             # error!
-        #             pass
-        #         print(self.boardSize)
-        #
-        #
-        #     @pyqtSlot()
-        #     def placementClickedSlot(self):
-        #         if self.boardSetting.placementRadioBtn1.isChecked():
-        #             self.placement = 'cell'
-        #         elif self.boardSetting.placementRadioBtn2.isChecked():
-        #             self.placement = 'cross'
-        #         else:
-        #             pass
-        #             # error!
-        #         print(self.placement)
-        #
-        #     @pyqtSlot()
-        #     def bgImageClickedSlot(self):
-        #         imageBrowser = QFileDialog(self)
-        #
-        #         imageBrowser.setNameFilters(["All Files (*)", "Image Files (*.png *.jpg *.bmp)"])
-        #         imageBrowser.selectNameFilter("Image Files (*.png *.jpg *.bmp)")
-        #         imageBrowser.setOption(QFileDialog.DontUseNativeDialog)
-        #         # self.bgImageUrl, _ = imageBrowser.getOpenFileUrl(self, "Board Background Image")
-        #         imageBrowser.setWindowTitle('Board image')
-        #
-        #         if imageBrowser.exec() == QFileDialog.Accepted:
-        #            try:
-        #                print(imageBrowser.selectedUrls())
-        #                self.bgImageUrl = imageBrowser.selectedUrls()[0]
-        #                self.boardImageFromUrl = QPixmap(self.bgImageUrl.path()[1:])
-        #                self.boardSetting.boardImage.setPixmap(self.boardImageFromUrl)
-        #                self.boardSetting.boardImage.show()
-        #            except Exception as e:
-        #                print(e)
-        #
-        #     @pyqtSlot()
-        #     def saveClickedSlot(self):
-        #         if not self.isBoardSetting():
-        #             msgBox = QtWidgets.QMessageBox()
-        #             msgBox.setText("fill in blank")
-        #             msgBox.exec()
-        #         else:
-        #             self.close()
-        #
-        #     def isBoardSetting(self):
-        #         return False if self.boardSize is 0 or self.placement is '' or self.bgImageUrl.isEmpty() else True
